@@ -1,11 +1,18 @@
 spring:
   datasource:
-    url: jdbc:tc:postgresql:16:///contractpulse_test
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:h2:mem:contractpulse_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
 
   flyway:
-    enabled: true
+    enabled: false
+
+supabase:
+  jwt-secret: placeholder-test-only
+  project-url: http://localhost
