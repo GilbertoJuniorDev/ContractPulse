@@ -48,7 +48,7 @@ class UserServiceTest {
                 .fullName("John Doe")
                 .email("john@example.com")
                 .avatarUrl("https://example.com/avatar.jpg")
-                .role(UserRole.PROVIDER)
+                .role(UserRole.CLIENT)
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())
                 .build();
@@ -100,7 +100,7 @@ class UserServiceTest {
                         .fullName(user.getFullName())
                         .email(user.getEmail())
                         .avatarUrl(user.getAvatarUrl())
-                        .role(UserRole.PROVIDER)
+                        .role(UserRole.CLIENT)
                         .createdAt(ZonedDateTime.now())
                         .updatedAt(ZonedDateTime.now())
                         .build();
@@ -109,6 +109,7 @@ class UserServiceTest {
             UserResponse response = userService.syncUser(userId, request);
 
             assertThat(response).isNotNull();
+            assertThat(response.role()).isEqualTo(UserRole.CLIENT);
             assertThat(response.fullName()).isEqualTo("Jane Doe");
             assertThat(response.email()).isEqualTo("jane@example.com");
 
@@ -144,7 +145,7 @@ class UserServiceTest {
                         .fullName(user.getFullName())
                         .email(user.getEmail())
                         .avatarUrl(user.getAvatarUrl())
-                        .role(UserRole.PROVIDER)
+                        .role(UserRole.CLIENT)
                         .createdAt(ZonedDateTime.now())
                         .updatedAt(ZonedDateTime.now())
                         .build();

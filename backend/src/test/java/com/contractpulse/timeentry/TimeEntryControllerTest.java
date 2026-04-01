@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Testes da camada web para TimeEntryController.
+ * Ciclo: DRAFT → SUBMITTED → PENDING_APPROVAL → APPROVED | DISPUTED → INVOICED
  */
 @WebMvcTest(
         controllers = TimeEntryController.class,
@@ -56,6 +57,9 @@ class TimeEntryControllerTest {
     @MockBean
     private CurrentUserService currentUserService;
 
+    @MockBean
+    private ApprovalService approvalService;
+
     private UUID userId;
     private UUID contractId;
     private UUID timeEntryId;
@@ -71,7 +75,7 @@ class TimeEntryControllerTest {
     private TimeEntryResponse buildResponse(TimeEntryStatus status) {
         return new TimeEntryResponse(
                 timeEntryId, contractId, userId, "Desenvolvimento",
-                new BigDecimal("4.0"), LocalDate.now(), status,
+                null, new BigDecimal("4.0"), LocalDate.now(), status,
                 null, null, null,
                 ZonedDateTime.now(), ZonedDateTime.now()
         );
@@ -81,30 +85,34 @@ class TimeEntryControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/time-entries — deve criar lançamento com 201")
-    void shouldCreateTimeEntry() throws Exception {
+    @DisplayName("POST /api/time-entries — deve criar lançamento como DRAFT com 201")
+    void shouldCreateTimeEntryAsDraft() throws Exception {
+        // Arrange
         var request = new CreateTimeEntryRequest(
                 contractId, "Desenvolvimento feature Y", new BigDecimal("4.0"), LocalDate.now());
 
         when(timeEntryService.createTimeEntry(eq(userId), any(CreateTimeEntryRequest.class)))
-                .thenReturn(buildResponse(TimeEntryStatus.PENDING));
+                .thenReturn(buildResponse(TimeEntryStatus.DRAFT));
 
+        // Act + Assert
         mockMvc.perform(post("/api/time-entries")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(timeEntryId.toString()))
-                .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(jsonPath("$.status").value("DRAFT"));
     }
 
     @Test
     @WithMockUser
     @DisplayName("POST /api/time-entries — deve retornar 400 com descrição vazia")
     void shouldReturn400ForBlankDescription() throws Exception {
+        // Arrange
         var request = new CreateTimeEntryRequest(
                 contractId, "", new BigDecimal("4.0"), LocalDate.now());
 
+        // Act + Assert
         mockMvc.perform(post("/api/time-entries")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,9 +124,11 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("POST /api/time-entries — deve retornar 400 com horas zero")
     void shouldReturn400ForZeroHours() throws Exception {
+        // Arrange
         var request = new CreateTimeEntryRequest(
                 contractId, "Dev", new BigDecimal("0"), LocalDate.now());
 
+        // Act + Assert
         mockMvc.perform(post("/api/time-entries")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -130,14 +140,50 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("POST /api/time-entries — deve retornar 400 sem contractId")
     void shouldReturn400ForNullContractId() throws Exception {
+        // Arrange
         var request = new CreateTimeEntryRequest(
                 null, "Dev", new BigDecimal("4.0"), LocalDate.now());
 
+        // Act + Assert
         mockMvc.perform(post("/api/time-entries")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    // --- PATCH /api/time-entries/{id}/submit ---
+
+    @Test
+    @WithMockUser
+    @DisplayName("PATCH /api/time-entries/{id}/submit — deve submeter com sucesso")
+    void shouldSubmitTimeEntry() throws Exception {
+        // Arrange
+        when(timeEntryService.submitTimeEntry(userId, timeEntryId))
+                .thenReturn(buildResponse(TimeEntryStatus.SUBMITTED));
+
+        // Act + Assert
+        mockMvc.perform(patch("/api/time-entries/" + timeEntryId + "/submit")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUBMITTED"));
+    }
+
+    // --- GET /api/time-entries/my ---
+
+    @Test
+    @WithMockUser
+    @DisplayName("GET /api/time-entries/my — deve listar lançamentos do provider")
+    void shouldListMyTimeEntries() throws Exception {
+        // Arrange
+        when(timeEntryService.findByProvider(userId))
+                .thenReturn(List.of(buildResponse(TimeEntryStatus.DRAFT)));
+
+        // Act + Assert
+        mockMvc.perform(get("/api/time-entries/my"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].status").value("DRAFT"));
     }
 
     // --- GET /api/time-entries/contract/{contractId} ---
@@ -146,9 +192,11 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("GET /api/time-entries/contract/{id} — deve listar lançamentos")
     void shouldListByContract() throws Exception {
+        // Arrange
         when(timeEntryService.findByContract(contractId))
-                .thenReturn(List.of(buildResponse(TimeEntryStatus.PENDING)));
+                .thenReturn(List.of(buildResponse(TimeEntryStatus.DRAFT)));
 
+        // Act + Assert
         mockMvc.perform(get("/api/time-entries/contract/" + contractId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
@@ -158,8 +206,10 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("GET /api/time-entries/contract/{id} — deve retornar lista vazia")
     void shouldReturnEmptyListByContract() throws Exception {
+        // Arrange
         when(timeEntryService.findByContract(contractId)).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/api/time-entries/contract/" + contractId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
@@ -171,12 +221,14 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("GET /api/time-entries/contract/{id}/pending — deve listar pendentes")
     void shouldListPendingByContract() throws Exception {
+        // Arrange
         when(timeEntryService.findPendingByContract(contractId))
-                .thenReturn(List.of(buildResponse(TimeEntryStatus.PENDING)));
+                .thenReturn(List.of(buildResponse(TimeEntryStatus.PENDING_APPROVAL)));
 
+        // Act + Assert
         mockMvc.perform(get("/api/time-entries/contract/" + contractId + "/pending"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("PENDING"));
+                .andExpect(jsonPath("$[0].status").value("PENDING_APPROVAL"));
     }
 
     // --- PATCH /api/time-entries/{id}/approve ---
@@ -185,15 +237,17 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("PATCH /api/time-entries/{id}/approve — deve aprovar")
     void shouldApproveTimeEntry() throws Exception {
+        // Arrange
         TimeEntryResponse approved = new TimeEntryResponse(
                 timeEntryId, contractId, UUID.randomUUID(), "Dev",
-                new BigDecimal("3.0"), LocalDate.now(), TimeEntryStatus.APPROVED,
+                null, new BigDecimal("3.0"), LocalDate.now(), TimeEntryStatus.APPROVED,
                 userId, ZonedDateTime.now(), null,
                 ZonedDateTime.now(), ZonedDateTime.now()
         );
 
         when(timeEntryService.approveTimeEntry(userId, timeEntryId)).thenReturn(approved);
 
+        // Act + Assert
         mockMvc.perform(patch("/api/time-entries/" + timeEntryId + "/approve")
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -206,11 +260,12 @@ class TimeEntryControllerTest {
     @WithMockUser
     @DisplayName("PATCH /api/time-entries/{id}/dispute — deve disputar")
     void shouldDisputeTimeEntry() throws Exception {
+        // Arrange
         var request = new ReviewTimeEntryRequest("Horas excessivas");
 
         TimeEntryResponse disputed = new TimeEntryResponse(
                 timeEntryId, contractId, UUID.randomUUID(), "Dev",
-                new BigDecimal("8.0"), LocalDate.now(), TimeEntryStatus.DISPUTED,
+                null, new BigDecimal("8.0"), LocalDate.now(), TimeEntryStatus.DISPUTED,
                 userId, ZonedDateTime.now(), "Horas excessivas",
                 ZonedDateTime.now(), ZonedDateTime.now()
         );
@@ -218,6 +273,7 @@ class TimeEntryControllerTest {
         when(timeEntryService.disputeTimeEntry(eq(userId), eq(timeEntryId), any(ReviewTimeEntryRequest.class)))
                 .thenReturn(disputed);
 
+        // Act + Assert
         mockMvc.perform(patch("/api/time-entries/" + timeEntryId + "/dispute")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -227,11 +283,24 @@ class TimeEntryControllerTest {
                 .andExpect(jsonPath("$.disputeReason").value("Horas excessivas"));
     }
 
+    // --- DELETE /api/time-entries/{id} ---
+
+    @Test
+    @WithMockUser
+    @DisplayName("DELETE /api/time-entries/{id} — deve remover com 204")
+    void shouldDeleteTimeEntry() throws Exception {
+        // Act + Assert
+        mockMvc.perform(delete("/api/time-entries/" + timeEntryId)
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+    }
+
     // --- Autenticação ---
 
     @Test
     @DisplayName("Deve retornar 401 sem autenticação")
     void shouldReturn401WithoutAuth() throws Exception {
+        // Act + Assert
         mockMvc.perform(get("/api/time-entries/contract/" + contractId))
                 .andExpect(status().isUnauthorized());
     }

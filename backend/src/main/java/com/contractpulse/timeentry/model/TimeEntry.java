@@ -11,6 +11,7 @@ import java.util.UUID;
 /**
  * Entidade que representa um lançamento de horas em um contrato.
  * O provider lança; o client aprova ou disputa.
+ * Invariantes de estado são gerenciadas pelos métodos de domínio.
  */
 @Entity
 @Table(name = "time_entries")
@@ -39,6 +40,9 @@ public class TimeEntry {
     @Column(nullable = false, length = 50)
     private TimeEntryStatus status;
 
+    @Column(name = "ai_summary", columnDefinition = "TEXT")
+    private String aiSummary;
+
     @Column(name = "reviewer_id")
     private UUID reviewerId;
 
@@ -66,6 +70,7 @@ public class TimeEntry {
         this.hours = builder.hours;
         this.entryDate = builder.entryDate;
         this.status = builder.status;
+        this.aiSummary = builder.aiSummary;
         this.reviewerId = builder.reviewerId;
         this.reviewedAt = builder.reviewedAt;
         this.disputeReason = builder.disputeReason;
@@ -103,6 +108,10 @@ public class TimeEntry {
         return status;
     }
 
+    public String getAiSummary() {
+        return aiSummary;
+    }
+
     public UUID getReviewerId() {
         return reviewerId;
     }
@@ -123,17 +132,50 @@ public class TimeEntry {
         return updatedAt;
     }
 
+    // --- Setter restrito — apenas para IA summary ---
+
+    public void setAiSummary(String aiSummary) {
+        this.aiSummary = aiSummary;
+    }
+
     // --- Métodos de domínio ---
 
     /**
+     * Submete o rascunho para revisão.
+     * Transição: DRAFT → SUBMITTED
+     */
+    public void submit() {
+        if (this.status != TimeEntryStatus.DRAFT) {
+            throw new IllegalStateException(
+                    "Only DRAFT entries can be submitted. Current status: " + this.status);
+        }
+        this.status = TimeEntryStatus.SUBMITTED;
+    }
+
+    /**
+     * Marca como pendente de aprovação (ciclo semanal).
+     * Transição: SUBMITTED → PENDING_APPROVAL
+     */
+    public void markPendingApproval() {
+        if (this.status != TimeEntryStatus.SUBMITTED) {
+            throw new IllegalStateException(
+                    "Only SUBMITTED entries can be marked pending approval. Current status: " + this.status);
+        }
+        this.status = TimeEntryStatus.PENDING_APPROVAL;
+    }
+
+    /**
      * Aprova o lançamento de horas.
+     * Transição: SUBMITTED | PENDING_APPROVAL → APPROVED
      *
      * @param reviewerId ID do cliente que está aprovando
      */
     public void approve(UUID reviewerId) {
         Objects.requireNonNull(reviewerId, "Reviewer ID must not be null");
-        if (this.status != TimeEntryStatus.PENDING) {
-            throw new IllegalStateException("Only PENDING entries can be approved");
+        if (this.status != TimeEntryStatus.SUBMITTED
+                && this.status != TimeEntryStatus.PENDING_APPROVAL) {
+            throw new IllegalStateException(
+                    "Only SUBMITTED or PENDING_APPROVAL entries can be approved. Current status: " + this.status);
         }
         this.status = TimeEntryStatus.APPROVED;
         this.reviewerId = reviewerId;
@@ -143,6 +185,7 @@ public class TimeEntry {
 
     /**
      * Disputa o lançamento de horas com uma justificativa.
+     * Transição: SUBMITTED | PENDING_APPROVAL → DISPUTED
      *
      * @param reviewerId    ID do cliente que está disputando
      * @param disputeReason motivo da disputa
@@ -150,13 +193,34 @@ public class TimeEntry {
     public void dispute(UUID reviewerId, String disputeReason) {
         Objects.requireNonNull(reviewerId, "Reviewer ID must not be null");
         Objects.requireNonNull(disputeReason, "Dispute reason must not be null");
-        if (this.status != TimeEntryStatus.PENDING) {
-            throw new IllegalStateException("Only PENDING entries can be disputed");
+        if (this.status != TimeEntryStatus.SUBMITTED
+                && this.status != TimeEntryStatus.PENDING_APPROVAL) {
+            throw new IllegalStateException(
+                    "Only SUBMITTED or PENDING_APPROVAL entries can be disputed. Current status: " + this.status);
         }
         this.status = TimeEntryStatus.DISPUTED;
         this.reviewerId = reviewerId;
         this.reviewedAt = ZonedDateTime.now();
         this.disputeReason = disputeReason;
+    }
+
+    /**
+     * Marca como faturado pelo sistema.
+     * Transição: APPROVED → INVOICED
+     */
+    public void markInvoiced() {
+        if (this.status != TimeEntryStatus.APPROVED) {
+            throw new IllegalStateException(
+                    "Only APPROVED entries can be invoiced. Current status: " + this.status);
+        }
+        this.status = TimeEntryStatus.INVOICED;
+    }
+
+    /**
+     * Verifica se o lançamento pode ser editado (apenas DRAFT).
+     */
+    public boolean isEditable() {
+        return this.status == TimeEntryStatus.DRAFT;
     }
 
     // --- Lifecycle callbacks ---
@@ -170,7 +234,7 @@ public class TimeEntry {
             updatedAt = ZonedDateTime.now();
         }
         if (status == null) {
-            status = TimeEntryStatus.PENDING;
+            status = TimeEntryStatus.DRAFT;
         }
     }
 
@@ -193,7 +257,8 @@ public class TimeEntry {
         private String description;
         private BigDecimal hours;
         private LocalDate entryDate;
-        private TimeEntryStatus status = TimeEntryStatus.PENDING;
+        private TimeEntryStatus status = TimeEntryStatus.DRAFT;
+        private String aiSummary;
         private UUID reviewerId;
         private ZonedDateTime reviewedAt;
         private String disputeReason;
@@ -232,6 +297,11 @@ public class TimeEntry {
 
         public Builder status(TimeEntryStatus status) {
             this.status = status;
+            return this;
+        }
+
+        public Builder aiSummary(String aiSummary) {
+            this.aiSummary = aiSummary;
             return this;
         }
 

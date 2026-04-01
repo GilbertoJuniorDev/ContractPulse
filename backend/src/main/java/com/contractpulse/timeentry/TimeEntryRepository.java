@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,11 +30,26 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     List<TimeEntry> findByContractIdAndStatusOrderByEntryDateDesc(UUID contractId, TimeEntryStatus status);
 
     /**
-     * Lista lançamentos pendentes de um contrato (pipeline de aprovação do client).
+     * Lista lançamentos do provider ordenados por data (mais recente primeiro).
      */
-    default List<TimeEntry> findPendingByContractId(UUID contractId) {
-        return findByContractIdAndStatusOrderByEntryDateDesc(contractId, TimeEntryStatus.PENDING);
-    }
+    List<TimeEntry> findByUserIdOrderByEntryDateDesc(UUID userId);
+
+    /**
+     * Lista lançamentos revisáveis (SUBMITTED + PENDING_APPROVAL) de um contrato.
+     */
+    @Query("SELECT t FROM TimeEntry t " +
+           "WHERE t.contractId = :contractId " +
+           "AND t.status IN ('SUBMITTED', 'PENDING_APPROVAL') " +
+           "ORDER BY t.entryDate DESC")
+    List<TimeEntry> findPendingByContractId(@Param("contractId") UUID contractId);
+
+    /**
+     * Soma horas não-disputadas de um contrato para validar teto.
+     * Inclui todos os status exceto DISPUTED.
+     */
+    @Query("SELECT COALESCE(SUM(t.hours), 0) FROM TimeEntry t " +
+           "WHERE t.contractId = :contractId AND t.status <> 'DISPUTED'")
+    BigDecimal sumHoursExcludingDisputed(@Param("contractId") UUID contractId);
 
     /**
      * Soma total de horas aprovadas de um contrato em um período.
@@ -54,4 +70,18 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     @Query("SELECT COALESCE(SUM(t.hours), 0) FROM TimeEntry t " +
            "WHERE t.contractId = :contractId AND t.status = 'APPROVED'")
     BigDecimal sumApprovedHoursByContract(@Param("contractId") UUID contractId);
+
+    /**
+     * Busca lançamentos por status global (para jobs agendados).
+     */
+    List<TimeEntry> findByStatus(TimeEntryStatus status);
+
+    /**
+     * Busca lançamentos PENDING_APPROVAL cujo updatedAt é anterior ao cutoff.
+     * Usada para auto-aprovação após 48h sem resposta.
+     */
+    @Query("SELECT t FROM TimeEntry t " +
+           "WHERE t.status = 'PENDING_APPROVAL' " +
+           "AND t.updatedAt < :cutoff")
+    List<TimeEntry> findPendingApprovalOlderThan(@Param("cutoff") ZonedDateTime cutoff);
 }

@@ -1,16 +1,26 @@
 package com.contractpulse.timeentry.model;
 
 /**
- * Status possíveis de um lançamento de horas.
+ * Ciclo de vida de um lançamento de horas.
+ * DRAFT → SUBMITTED → PENDING_APPROVAL → APPROVED | DISPUTED → INVOICED
  */
 public enum TimeEntryStatus {
 
-    /** Aguardando aprovação do cliente. */
-    PENDING,
+    /** Rascunho, não visível ao cliente. */
+    DRAFT,
 
-    /** Aprovado pelo cliente. */
+    /** Enviado para revisão pelo provider. */
+    SUBMITTED,
+
+    /** Aguardando aprovação do cliente (após ciclo semanal). */
+    PENDING_APPROVAL,
+
+    /** Aprovado pelo cliente — entra no cálculo de fatura. */
     APPROVED,
 
-    /** Disputado pelo cliente. */
-    DISPUTED
+    /** Disputado pelo cliente — abre thread de resolução. */
+    DISPUTED,
+
+    /** Incluído em fatura emitida pelo sistema. */
+    INVOICED
 }

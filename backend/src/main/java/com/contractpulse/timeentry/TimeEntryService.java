@@ -23,7 +23,10 @@ import java.util.UUID;
 
 /**
  * Serviço com regras de negócio de lançamentos de horas.
- * Provider lança, client aprova ou disputa.
+ * <p>
+ * Ciclo de vida completo:
+ * DRAFT → SUBMITTED → PENDING_APPROVAL → APPROVED | DISPUTED → INVOICED
+ * </p>
  */
 @Service
 public class TimeEntryService {
@@ -40,11 +43,11 @@ public class TimeEntryService {
     }
 
     /**
-     * Cria um lançamento de horas para um contrato ativo.
+     * Cria um lançamento de horas como DRAFT para um contrato ativo.
      *
      * @param userId  ID do provider que está lançando
      * @param request dados do lançamento
-     * @return resposta com dados do lançamento criado
+     * @return resposta com dados do lançamento criado (status DRAFT)
      */
     @Transactional
     public TimeEntryResponse createTimeEntry(UUID userId, CreateTimeEntryRequest request) {
@@ -63,9 +66,32 @@ public class TimeEntryService {
                 .build();
 
         TimeEntry saved = timeEntryRepository.save(entry);
-        log.info("Time entry created: id={}, contract={}, hours={}",
+        log.info("Time entry created (DRAFT): id={}, contract={}, hours={}",
                 saved.getId(), saved.getContractId(), saved.getHours());
 
+        return TimeEntryResponse.fromEntity(saved);
+    }
+
+    /**
+     * Submete um lançamento de horas (DRAFT → SUBMITTED).
+     * Apenas o provider dono do lançamento pode submeter.
+     *
+     * @param userId      ID do provider que está submetendo
+     * @param timeEntryId ID do lançamento
+     * @return resposta com dados atualizados (status SUBMITTED)
+     */
+    @Transactional
+    public TimeEntryResponse submitTimeEntry(UUID userId, UUID timeEntryId) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        Objects.requireNonNull(timeEntryId, "Time entry ID must not be null");
+
+        TimeEntry entry = findTimeEntryOrThrow(timeEntryId);
+        validateProviderAccess(userId, entry);
+
+        entry.submit();
+        TimeEntry saved = timeEntryRepository.save(entry);
+
+        log.info("Time entry submitted: id={}, user={}", saved.getId(), userId);
         return TimeEntryResponse.fromEntity(saved);
     }
 
@@ -84,10 +110,10 @@ public class TimeEntryService {
     }
 
     /**
-     * Lista lançamentos pendentes de um contrato (pipeline de aprovação do client).
+     * Lista lançamentos pendentes de aprovação de um contrato.
      *
      * @param contractId ID do contrato
-     * @return lista de lançamentos pendentes
+     * @return lista de lançamentos com status PENDING_APPROVAL
      */
     @Transactional(readOnly = true)
     public List<TimeEntryResponse> findPendingByContract(UUID contractId) {
@@ -98,7 +124,22 @@ public class TimeEntryService {
     }
 
     /**
-     * Aprova um lançamento de horas. Apenas o client do contrato pode aprovar.
+     * Lista todos os lançamentos do provider autenticado.
+     *
+     * @param userId ID do provider
+     * @return lista de lançamentos do provider ordenados por data desc
+     */
+    @Transactional(readOnly = true)
+    public List<TimeEntryResponse> findByProvider(UUID userId) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        return timeEntryRepository.findByUserIdOrderByEntryDateDesc(userId).stream()
+                .map(TimeEntryResponse::fromEntity)
+                .toList();
+    }
+
+    /**
+     * Aprova um lançamento de horas (PENDING_APPROVAL → APPROVED).
+     * Apenas o client do contrato pode aprovar.
      *
      * @param reviewerId  ID do cliente que está aprovando
      * @param timeEntryId ID do lançamento
@@ -121,7 +162,8 @@ public class TimeEntryService {
     }
 
     /**
-     * Disputa um lançamento de horas. Apenas o client do contrato pode disputar.
+     * Disputa um lançamento de horas (PENDING_APPROVAL → DISPUTED).
+     * Apenas o client do contrato pode disputar.
      *
      * @param reviewerId  ID do cliente que está disputando
      * @param timeEntryId ID do lançamento
@@ -147,7 +189,7 @@ public class TimeEntryService {
     }
 
     /**
-     * Retorna o total de horas aprovadas de um contrato no período atual.
+     * Retorna o total de horas aprovadas de um contrato no período.
      */
     @Transactional(readOnly = true)
     public BigDecimal sumApprovedHoursForPeriod(UUID contractId, LocalDate startDate, LocalDate endDate) {
@@ -160,6 +202,30 @@ public class TimeEntryService {
     @Transactional(readOnly = true)
     public BigDecimal sumApprovedHoursTotal(UUID contractId) {
         return timeEntryRepository.sumApprovedHoursByContract(contractId);
+    }
+
+    /**
+     * Remove um lançamento de horas em DRAFT.
+     * Apenas o provider dono pode remover, e somente enquanto estiver em DRAFT.
+     *
+     * @param userId      ID do provider autenticado
+     * @param timeEntryId ID do lançamento a remover
+     */
+    @Transactional
+    public void deleteTimeEntry(UUID userId, UUID timeEntryId) {
+        Objects.requireNonNull(userId, "User ID must not be null");
+        Objects.requireNonNull(timeEntryId, "Time entry ID must not be null");
+
+        TimeEntry entry = findTimeEntryOrThrow(timeEntryId);
+        validateProviderAccess(userId, entry);
+
+        if (!entry.isEditable()) {
+            throw new IllegalStateException(
+                    "Only DRAFT entries can be deleted. Current status: " + entry.getStatus());
+        }
+
+        timeEntryRepository.delete(entry);
+        log.info("Time entry deleted: id={}, user={}", timeEntryId, userId);
     }
 
     // --- Métodos internos ---
@@ -178,6 +244,13 @@ public class TimeEntryService {
         if (contract.getStatus() != ContractStatus.ACTIVE) {
             throw new IllegalStateException(
                     "Cannot create time entry for contract with status: " + contract.getStatus());
+        }
+    }
+
+    private void validateProviderAccess(UUID userId, TimeEntry entry) {
+        if (!entry.getUserId().equals(userId)) {
+            throw new IllegalStateException(
+                    "User " + userId + " is not the owner of time entry " + entry.getId());
         }
     }
 

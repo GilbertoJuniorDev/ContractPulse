@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useContract } from '@/hooks/useContracts'
+import { useSubmitTimeEntry, useDeleteTimeEntry } from '@/hooks/useTimeEntries'
 import TimeEntryForm from '@/components/time-entry/TimeEntryForm'
 import TimeEntryList from '@/components/time-entry/TimeEntryList'
 
@@ -17,6 +18,18 @@ export default function TimeEntriesPage({
   const contractId = params.id
   const { data: contract, isLoading } = useContract(contractId)
   const [showForm, setShowForm] = useState(false)
+  const submitMutation = useSubmitTimeEntry()
+  const deleteMutation = useDeleteTimeEntry()
+
+  function handleSubmitEntry(timeEntryId: string) {
+    submitMutation.mutate(timeEntryId)
+  }
+
+  function handleDeleteEntry(timeEntryId: string) {
+    if (window.confirm('Tem certeza que deseja remover este lançamento?')) {
+      deleteMutation.mutate(timeEntryId)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -71,7 +84,13 @@ export default function TimeEntriesPage({
         <h2 className="mb-4 text-lg font-semibold text-gray-900">
           Histórico de Lançamentos
         </h2>
-        <TimeEntryList contractId={contractId} />
+        <TimeEntryList
+          contractId={contractId}
+          showActions
+          role="provider"
+          onSubmit={handleSubmitEntry}
+          onDelete={handleDeleteEntry}
+        />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   useContract,
   usePauseContract,
@@ -47,7 +48,9 @@ export default function ContractDetail({
   contractId,
   onBack,
 }: ContractDetailProps) {
+  const router = useRouter()
   const [view, setView] = useState<ViewState>({ mode: 'view' })
+  const [copiedLink, setCopiedLink] = useState(false)
   const { data: contract, isLoading, error } = useContract(contractId)
   const pauseMutation = usePauseContract()
   const resumeMutation = useResumeContract()
@@ -158,8 +161,35 @@ export default function ContractDetail({
 
           {/* Ações */}
           <div className="flex items-center gap-2">
+            {isPausedOrActive && (
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/client-view/${contractId}`
+                  void navigator.clipboard.writeText(url)
+                  setCopiedLink(true)
+                  setTimeout(() => setCopiedLink(false), 2000)
+                }}
+                className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                {copiedLink ? '✓ Link copiado' : 'Copiar Link do Cliente'}
+              </button>
+            )}
+            {isPausedOrActive && (
+              <button
+                onClick={() => router.push(`/client-view/${contractId}`)}
+                className="rounded-md border border-teal-300 bg-white px-3 py-1.5 text-sm font-medium text-teal-700 shadow-sm hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+              >
+                Visão do Cliente
+              </button>
+            )}
             {isActive && (
               <>
+                <button
+                  onClick={() => router.push(`/contracts/${contractId}/time-entries`)}
+                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Lançar Horas
+                </button>
                 <button
                   onClick={() => setView({ mode: 'edit' })}
                   className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

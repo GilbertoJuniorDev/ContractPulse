@@ -1,5 +1,7 @@
 /**
  * Badge visual indicando o status de aprovação de um lançamento.
+ *
+ * Ciclo: DRAFT → SUBMITTED → PENDING_APPROVAL → APPROVED | DISPUTED → INVOICED
  */
 import type { TimeEntryStatus } from '@/lib/types/time-entry'
 
@@ -11,7 +13,15 @@ const statusConfig: Record<
   TimeEntryStatus,
   { label: string; className: string }
 > = {
-  PENDING: {
+  DRAFT: {
+    label: 'Rascunho',
+    className: 'bg-gray-100 text-gray-800',
+  },
+  SUBMITTED: {
+    label: 'Enviado',
+    className: 'bg-blue-100 text-blue-800',
+  },
+  PENDING_APPROVAL: {
     label: 'Pendente',
     className: 'bg-yellow-100 text-yellow-800',
   },
@@ -22,6 +32,10 @@ const statusConfig: Record<
   DISPUTED: {
     label: 'Disputado',
     className: 'bg-red-100 text-red-800',
+  },
+  INVOICED: {
+    label: 'Faturado',
+    className: 'bg-purple-100 text-purple-800',
   },
 }
 

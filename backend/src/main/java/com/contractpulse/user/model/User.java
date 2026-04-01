@@ -27,7 +27,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role = UserRole.PROVIDER;
+    private UserRole role = UserRole.CLIENT;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
@@ -128,7 +128,7 @@ public class User {
         private String fullName;
         private String email;
         private String avatarUrl;
-        private UserRole role = UserRole.PROVIDER;
+        private UserRole role = UserRole.CLIENT;
         private ZonedDateTime createdAt;
         private ZonedDateTime updatedAt;
 

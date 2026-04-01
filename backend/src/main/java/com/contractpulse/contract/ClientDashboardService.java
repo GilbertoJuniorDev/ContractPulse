@@ -77,7 +77,7 @@ public class ClientDashboardService {
 
         var allEntries = timeEntryRepository.findByContractIdOrderByEntryDateDesc(contractId);
         long pendingCount = allEntries.stream()
-                .filter(e -> e.getStatus() == TimeEntryStatus.PENDING).count();
+                .filter(e -> e.getStatus() == TimeEntryStatus.PENDING_APPROVAL).count();
         long approvedCount = allEntries.stream()
                 .filter(e -> e.getStatus() == TimeEntryStatus.APPROVED).count();
         long disputedCount = allEntries.stream()

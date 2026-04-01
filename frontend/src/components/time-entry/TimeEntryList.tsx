@@ -1,24 +1,43 @@
 /**
  * Lista de lançamentos de horas com status e ações.
+ *
+ * Ciclo: DRAFT → SUBMITTED → PENDING_APPROVAL → APPROVED | DISPUTED → INVOICED
  */
 'use client'
 
 import { useTimeEntriesByContract } from '@/hooks/useTimeEntries'
 import ApprovalBadge from './ApprovalBadge'
+import type { TimeEntryStatus } from '@/lib/types/time-entry'
 
 interface TimeEntryListProps {
   contractId: string
   showActions?: boolean
+  /** Define quem está visualizando — controla quais ações são exibidas. */
+  role?: 'provider' | 'client'
+  onSubmit?: (id: string) => void
+  onDelete?: (id: string) => void
   onApprove?: (id: string) => void
   onDispute?: (id: string) => void
 }
 
+/** Status que o client pode revisar (aprovar ou disputar). */
+const CLIENT_REVIEWABLE_STATUSES: TimeEntryStatus[] = [
+  'SUBMITTED',
+  'PENDING_APPROVAL',
+]
+
 /**
  * Lista de lançamentos de horas de um contrato.
+ *
+ * - Provider vê: Enviar e Remover (apenas DRAFT)
+ * - Client vê: Aprovar e Disputar (SUBMITTED + PENDING_APPROVAL)
  */
 export default function TimeEntryList({
   contractId,
   showActions = false,
+  role = 'provider',
+  onSubmit,
+  onDelete,
   onApprove,
   onDispute,
 }: TimeEntryListProps) {
@@ -39,6 +58,58 @@ export default function TimeEntryList({
   if (!entries || entries.length === 0) {
     return (
       <p className="text-sm text-gray-500">Nenhum lançamento encontrado.</p>
+    )
+  }
+
+  const renderActions = (entry: (typeof entries)[0]) => {
+    if (!showActions) return null
+
+    if (role === 'provider' && entry.status === 'DRAFT') {
+      return (
+        <td className="whitespace-nowrap px-4 py-3 text-center">
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={() => onSubmit?.(entry.id)}
+              className="rounded bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+            >
+              Enviar
+            </button>
+            <button
+              onClick={() => onDelete?.(entry.id)}
+              className="rounded bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+            >
+              Remover
+            </button>
+          </div>
+        </td>
+      )
+    }
+
+    if (role === 'client' && CLIENT_REVIEWABLE_STATUSES.includes(entry.status as TimeEntryStatus)) {
+      return (
+        <td className="whitespace-nowrap px-4 py-3 text-center">
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={() => onApprove?.(entry.id)}
+              className="rounded bg-green-50 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-100"
+            >
+              Aprovar
+            </button>
+            <button
+              onClick={() => onDispute?.(entry.id)}
+              className="rounded bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+            >
+              Disputar
+            </button>
+          </div>
+        </td>
+      )
+    }
+
+    return (
+      <td className="whitespace-nowrap px-4 py-3 text-center text-xs text-gray-400">
+        —
+      </td>
     )
   }
 
@@ -81,29 +152,7 @@ export default function TimeEntryList({
               <td className="whitespace-nowrap px-4 py-3 text-center">
                 <ApprovalBadge status={entry.status} />
               </td>
-              {showActions && entry.status === 'PENDING' && (
-                <td className="whitespace-nowrap px-4 py-3 text-center">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => onApprove?.(entry.id)}
-                      className="rounded bg-green-50 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-100"
-                    >
-                      Aprovar
-                    </button>
-                    <button
-                      onClick={() => onDispute?.(entry.id)}
-                      className="rounded bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
-                    >
-                      Disputar
-                    </button>
-                  </div>
-                </td>
-              )}
-              {showActions && entry.status !== 'PENDING' && (
-                <td className="whitespace-nowrap px-4 py-3 text-center text-xs text-gray-400">
-                  —
-                </td>
-              )}
+              {renderActions(entry)}
             </tr>
           ))}
         </tbody>

@@ -6,7 +6,7 @@
 1. Sempre seguir as regras do indice 15 de Padrões de Engenharia de Software, garantindo código limpo, modular e testável
 2. Sempre analisar o código para garantir que não há vazamento de abstração ou acoplamento indevido
 3. Sempre implementar os testes unitários e de integração necessários para garantir a robustez do sistema
-4. 
+4. Lembre se que não estou usando docker, estou usando o supabase.
 ---
 
 ## Índice
