@@ -52,17 +52,17 @@ export default function DisputeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-        <h3 className="text-lg font-semibold text-gray-900">
+      <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-dark-card dark:ring-1 dark:ring-dark-border">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Disputar Lançamento
         </h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Informe o motivo para disputar este lançamento de horas.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
           {apiError && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+            <div className="alert-error">
               {apiError}
             </div>
           )}
@@ -70,7 +70,7 @@ export default function DisputeModal({
           <div>
             <label
               htmlFor="disputeReason"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Motivo da disputa
             </label>
@@ -79,11 +79,11 @@ export default function DisputeModal({
               rows={4}
               placeholder="Descreva o motivo..."
               {...register('disputeReason')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="input-base"
               disabled={isSubmitting}
             />
             {errors.disputeReason && (
-              <p className="mt-1 text-sm text-red-600">
+              <p className="field-error">
                 {errors.disputeReason.message}
               </p>
             )}
@@ -93,14 +93,14 @@ export default function DisputeModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="btn-secondary"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              className="btn-danger"
             >
               {isSubmitting ? 'Enviando...' : 'Disputar'}
             </button>

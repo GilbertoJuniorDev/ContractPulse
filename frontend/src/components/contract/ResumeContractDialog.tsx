@@ -26,11 +26,11 @@ export default function ResumeContractDialog({
         aria-hidden="true"
       />
 
-      <div className="relative z-50 mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="relative z-50 mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-dark-card dark:ring-1 dark:ring-dark-border">
         <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/20">
             <svg
-              className="h-5 w-5 text-green-600"
+              className="h-5 w-5 text-green-600 dark:text-green-400"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -44,12 +44,12 @@ export default function ResumeContractDialog({
             </svg>
           </div>
           <div>
-            <h3 className="text-base font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               Reativar contrato
             </h3>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               Tem certeza que deseja reativar o contrato{' '}
-              <span className="font-medium text-gray-700">
+              <span className="font-medium text-gray-700 dark:text-gray-300">
                 {contract.title}
               </span>
               ? Novos lançamentos de horas serão permitidos novamente.
@@ -62,7 +62,7 @@ export default function ResumeContractDialog({
             type="button"
             onClick={onCancel}
             disabled={isResuming}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="btn-secondary"
           >
             Cancelar
           </button>
@@ -70,7 +70,7 @@ export default function ResumeContractDialog({
             type="button"
             onClick={onConfirm}
             disabled={isResuming}
-            className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+            className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-dark-bg"
           >
             {isResuming ? 'Reativando...' : 'Reativar'}
           </button>

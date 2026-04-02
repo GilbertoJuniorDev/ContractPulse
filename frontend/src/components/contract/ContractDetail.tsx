@@ -79,7 +79,7 @@ export default function ContractDetail({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-        <span className="ml-3 text-sm text-gray-600">
+        <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">
           Carregando contrato...
         </span>
       </div>
@@ -89,8 +89,8 @@ export default function ContractDetail({
   if (error || !contract) {
     return (
       <div className="space-y-4">
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-700">
+        <div className="alert-error">
+          <p>
             {error instanceof Error
               ? error.message
               : 'Contrato não encontrado.'}
@@ -98,7 +98,7 @@ export default function ContractDetail({
         </div>
         <button
           onClick={onBack}
-          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+          className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
           &larr; Voltar para contratos
         </button>
@@ -112,14 +112,14 @@ export default function ContractDetail({
       <div>
         <button
           onClick={handleBackToView}
-          className="mb-4 text-sm font-medium text-blue-600 hover:text-blue-800"
+          className="mb-4 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
           &larr; Voltar ao detalhe
         </button>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Editar Contrato
         </h2>
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="card">
           <EditContractForm
             contract={contract}
             onSuccess={handleBackToView}
@@ -144,16 +144,16 @@ export default function ContractDetail({
           <div>
             <button
               onClick={onBack}
-              className="mb-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+              className="mb-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
               &larr; Voltar para contratos
             </button>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               {contract.title}
             </h2>
             <div className="mt-2 flex items-center gap-3">
               <ContractStatusBadge status={contract.status} />
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {TYPE_LABELS[contract.type]}
               </span>
             </div>
@@ -169,7 +169,7 @@ export default function ContractDetail({
                   setCopiedLink(true)
                   setTimeout(() => setCopiedLink(false), 2000)
                 }}
-                className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:border-indigo-500/30 dark:bg-dark-card dark:text-indigo-400 dark:hover:bg-indigo-500/10 dark:focus:ring-offset-dark-bg"
               >
                 {copiedLink ? '✓ Link copiado' : 'Copiar Link do Cliente'}
               </button>
@@ -177,7 +177,7 @@ export default function ContractDetail({
             {isPausedOrActive && (
               <button
                 onClick={() => router.push(`/client-view/${contractId}`)}
-                className="rounded-md border border-teal-300 bg-white px-3 py-1.5 text-sm font-medium text-teal-700 shadow-sm hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                className="rounded-md border border-teal-300 bg-white px-3 py-1.5 text-sm font-medium text-teal-700 shadow-sm hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:border-teal-500/30 dark:bg-dark-card dark:text-teal-400 dark:hover:bg-teal-500/10 dark:focus:ring-offset-dark-bg"
               >
                 Visão do Cliente
               </button>
@@ -186,19 +186,19 @@ export default function ContractDetail({
               <>
                 <button
                   onClick={() => router.push(`/contracts/${contractId}/time-entries`)}
-                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-dark-bg"
                 >
                   Lançar Horas
                 </button>
                 <button
                   onClick={() => setView({ mode: 'edit' })}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-dark-border dark:bg-dark-card dark:text-gray-300 dark:hover:bg-dark-hover dark:focus:ring-offset-dark-bg"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => setView({ mode: 'pause' })}
-                  className="rounded-md border border-yellow-300 bg-white px-3 py-1.5 text-sm font-medium text-yellow-700 shadow-sm hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                  className="rounded-md border border-yellow-300 bg-white px-3 py-1.5 text-sm font-medium text-yellow-700 shadow-sm hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:border-amber-500/30 dark:bg-dark-card dark:text-amber-400 dark:hover:bg-amber-500/10 dark:focus:ring-offset-dark-bg"
                 >
                   Pausar
                 </button>
@@ -207,7 +207,7 @@ export default function ContractDetail({
             {isPaused && (
               <button
                 onClick={() => setView({ mode: 'resume' })}
-                className="rounded-md border border-green-300 bg-white px-3 py-1.5 text-sm font-medium text-green-700 shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="rounded-md border border-green-300 bg-white px-3 py-1.5 text-sm font-medium text-green-700 shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:border-green-500/30 dark:bg-dark-card dark:text-green-400 dark:hover:bg-green-500/10 dark:focus:ring-offset-dark-bg"
               >
                 Reativar
               </button>
@@ -215,7 +215,7 @@ export default function ContractDetail({
             {isPausedOrActive && contract.status !== 'TERMINATED' && (
               <button
                 onClick={() => setView({ mode: 'terminate' })}
-                className="rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                className="rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-red-500/30 dark:bg-dark-card dark:text-red-400 dark:hover:bg-red-500/10 dark:focus:ring-offset-dark-bg"
               >
                 Encerrar
               </button>
@@ -224,8 +224,8 @@ export default function ContractDetail({
         </div>
 
         {/* Informações gerais */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h3 className="mb-4 text-base font-semibold text-gray-900">
+        <div className="card">
+          <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
             Informações Gerais
           </h3>
           <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -255,8 +255,8 @@ export default function ContractDetail({
 
         {/* Configuração Retainer */}
         {contract.type === 'RETAINER' && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h3 className="mb-4 text-base font-semibold text-gray-900">
+          <div className="card">
+            <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
               Configuração — Banco de Horas
             </h3>
             <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -337,8 +337,8 @@ interface InfoItemProps {
 function InfoItem({ label, value }: InfoItemProps) {
   return (
     <div>
-      <dt className="text-sm font-medium text-gray-500">{label}</dt>
-      <dd className="mt-1 text-sm text-gray-900">{String(value)}</dd>
+      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</dt>
+      <dd className="mt-1 text-sm text-gray-900 dark:text-white">{String(value)}</dd>
     </div>
   )
 }

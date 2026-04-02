@@ -16,8 +16,8 @@ const settingsSections = [
 export default function SettingsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-      <p className="mt-2 text-sm text-gray-600">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Configurações</h1>
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
         Gerencie sua conta e preferências do sistema.
       </p>
 
@@ -26,12 +26,12 @@ export default function SettingsPage() {
           <Link
             key={section.href}
             href={section.href}
-            className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+            className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-dark-border dark:bg-dark-card dark:hover:shadow-glow"
           >
-            <h2 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+            <h2 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
               {section.title}
             </h2>
-            <p className="mt-2 text-sm text-gray-500">{section.description}</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{section.description}</p>
           </Link>
         ))}
       </div>

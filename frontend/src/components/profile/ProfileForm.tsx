@@ -193,8 +193,8 @@ export default function ProfileForm() {
 
   if (isError) {
     return (
-      <div className="rounded-md bg-red-50 p-4">
-        <p className="text-sm text-red-700">
+      <div className="alert-error">
+        <p>
           Erro ao carregar perfil: {error?.message ?? 'Erro desconhecido'}
         </p>
       </div>
@@ -208,7 +208,7 @@ export default function ProfileForm() {
 
       {/* Avatar com upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="form-label mb-3">
           Foto de perfil
         </label>
         <div className="flex items-center gap-5">
@@ -218,7 +218,7 @@ export default function ProfileForm() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading || isUpdating}
-              className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+              className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-dark-border dark:focus:ring-offset-dark-bg"
             >
               {avatarPreview ? (
                 <Image
@@ -229,7 +229,7 @@ export default function ProfileForm() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-gray-500">
+                <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-gray-500 dark:text-gray-400">
                   {user?.fullName?.charAt(0)?.toUpperCase() ?? '?'}
                 </div>
               )}
@@ -257,14 +257,14 @@ export default function ProfileForm() {
 
           {/* Info + ações */}
           <div className="space-y-1">
-            <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
-            <p className="text-sm text-gray-500">{user?.email}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.fullName}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
             <div className="flex items-center gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading || isUpdating}
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 {isUploading ? 'Enviando...' : 'Alterar foto'}
               </button>
@@ -273,14 +273,14 @@ export default function ProfileForm() {
                   type="button"
                   onClick={handleRemoveAvatar}
                   disabled={isUploading || isUpdating}
-                  className="flex items-center gap-1 text-sm text-red-500 hover:text-red-600 disabled:opacity-50"
+                  className="flex items-center gap-1 text-sm text-red-500 hover:text-red-600 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Remover
                 </button>
               )}
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               JPEG, PNG, WebP ou GIF. Máximo {MAX_ORIGINAL_SIZE_MB}MB (comprimido automaticamente).
             </p>
           </div>
@@ -289,24 +289,24 @@ export default function ProfileForm() {
 
       {/* Nome completo */}
       <div>
-        <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="fullName" className="form-label">
           Nome completo
         </label>
         <input
           id="fullName"
           type="text"
           {...register('fullName')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+          className="input-base"
           disabled={isUpdating}
         />
         {errors.fullName && (
-          <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
+          <p className="field-error">{errors.fullName.message}</p>
         )}
       </div>
 
       {/* E-mail (somente leitura — vem do Supabase Auth) */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="email" className="form-label">
           E-mail
         </label>
         <input
@@ -314,23 +314,23 @@ export default function ProfileForm() {
           type="email"
           value={user?.email ?? ''}
           disabled
-          className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+          className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-dark-border dark:bg-dark-hover dark:text-gray-400"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           O e-mail é gerenciado pelo provedor de autenticação e não pode ser alterado aqui.
         </p>
       </div>
 
       {/* Mensagens de feedback */}
       {successMessage && (
-        <div className="rounded-md bg-green-50 p-3">
-          <p className="text-sm text-green-700">{successMessage}</p>
+        <div className="alert-success">
+          <p>{successMessage}</p>
         </div>
       )}
 
       {apiError && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">{apiError}</p>
+        <div className="alert-error">
+          <p>{apiError}</p>
         </div>
       )}
 
@@ -339,7 +339,7 @@ export default function ProfileForm() {
         <button
           type="submit"
           disabled={isUpdating || !isDirty}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-primary disabled:cursor-not-allowed"
         >
           {isUpdating ? 'Salvando...' : 'Salvar alterações'}
         </button>

@@ -24,21 +24,19 @@ export default function PendingApprovalsPipeline() {
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h3 className="text-base font-semibold text-gray-900">
+      <div className="card">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">
           Pipeline de Aprovações
         </h3>
-        <p className="mt-4 text-sm text-gray-500">Carregando...</p>
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Carregando...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
-        <p className="text-sm text-red-600">
-          Erro ao carregar pipeline: {error.message}
-        </p>
+      <div className="alert-error p-6">
+        <p>Erro ao carregar pipeline: {error.message}</p>
       </div>
     )
   }
@@ -56,46 +54,46 @@ export default function PendingApprovalsPipeline() {
   ).length
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6">
-      <h3 className="text-base font-semibold text-gray-900">
+    <div className="card">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
         Pipeline de Aprovações
       </h3>
 
       {/* Contadores */}
       <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="rounded-md bg-blue-50 p-3 text-center">
-          <p className="text-2xl font-bold text-blue-700">{submittedCount}</p>
-          <p className="text-xs text-blue-600">Enviados</p>
+        <div className="rounded-lg bg-blue-50 p-3 text-center dark:bg-blue-500/10">
+          <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{submittedCount}</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400/70">Enviados</p>
         </div>
-        <div className="rounded-md bg-yellow-50 p-3 text-center">
-          <p className="text-2xl font-bold text-yellow-700">
+        <div className="rounded-lg bg-amber-50 p-3 text-center dark:bg-amber-500/10">
+          <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">
             {pendingApprovalCount}
           </p>
-          <p className="text-xs text-yellow-600">Pendentes</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400/70">Pendentes</p>
         </div>
       </div>
 
       {/* Lista resumida */}
       {pendingEntries.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
           Nenhum lançamento aguardando aprovação.
         </p>
       ) : (
-        <ul className="mt-4 divide-y divide-gray-100">
+        <ul className="mt-4 divide-y divide-gray-100 dark:divide-dark-border">
           {pendingEntries.slice(0, MAX_VISIBLE_ITEMS).map((entry) => (
             <li key={entry.id}>
               <Link
                 href={`/contracts/${entry.contractId}/time-entries`}
-                className="flex items-center justify-between py-3 rounded-md px-2 -mx-2 transition-colors hover:bg-gray-50"
+                className="flex items-center justify-between py-3 rounded-lg px-2 -mx-2 transition-colors hover:bg-gray-50 dark:hover:bg-dark-hover"
               >
                 <div className="min-w-0 flex-1">
                   <p
-                    className="truncate text-sm font-medium text-gray-900"
+                    className="truncate text-sm font-medium text-gray-900 dark:text-white"
                     title={entry.description}
                   >
                     {entry.description}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {formatShortDate(entry.entryDate)} •{' '}
                     {Number(entry.hours).toFixed(1)}h
                   </p>
@@ -108,7 +106,7 @@ export default function PendingApprovalsPipeline() {
           ))}
           {pendingEntries.length > MAX_VISIBLE_ITEMS && (
             <li className="py-3 text-center">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 +{pendingEntries.length - MAX_VISIBLE_ITEMS} lançamentos
                 adicionais
               </p>

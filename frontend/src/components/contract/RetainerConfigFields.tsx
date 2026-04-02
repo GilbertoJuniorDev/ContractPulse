@@ -23,8 +23,8 @@ export default function RetainerConfigFields({
   const configErrors = errors.retainerConfig
 
   return (
-    <fieldset className="space-y-4 rounded-lg border border-gray-200 p-4">
-      <legend className="px-2 text-sm font-medium text-gray-700">
+    <fieldset className="space-y-4 rounded-xl border border-gray-200 p-4 dark:border-dark-border">
+      <legend className="px-2 text-sm font-medium text-gray-700 dark:text-gray-300">
         Configuração do Banco de Horas
       </legend>
 
@@ -33,7 +33,7 @@ export default function RetainerConfigFields({
         <div>
           <label
             htmlFor="monthlyHours"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Horas mensais
           </label>
@@ -43,11 +43,11 @@ export default function RetainerConfigFields({
             min={1}
             placeholder="40"
             {...register('retainerConfig.monthlyHours', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {configErrors?.monthlyHours && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {configErrors.monthlyHours.message}
             </p>
           )}
@@ -57,7 +57,7 @@ export default function RetainerConfigFields({
         <div>
           <label
             htmlFor="hourlyRate"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Valor por hora
           </label>
@@ -68,11 +68,11 @@ export default function RetainerConfigFields({
             step="0.01"
             placeholder="150.00"
             {...register('retainerConfig.hourlyRate', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {configErrors?.hourlyRate && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {configErrors.hourlyRate.message}
             </p>
           )}
@@ -84,14 +84,14 @@ export default function RetainerConfigFields({
         <div>
           <label
             htmlFor="rolloverPolicy"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Política de rollover
           </label>
           <select
             id="rolloverPolicy"
             {...register('retainerConfig.rolloverPolicy')}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="select-base"
             disabled={isSubmitting}
           >
             <option value="EXPIRE">Expirar</option>
@@ -99,7 +99,7 @@ export default function RetainerConfigFields({
             <option value="PARTIAL">Parcial</option>
           </select>
           {configErrors?.rolloverPolicy && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {configErrors.rolloverPolicy.message}
             </p>
           )}
@@ -109,7 +109,7 @@ export default function RetainerConfigFields({
         <div>
           <label
             htmlFor="alertThreshold"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Alerta de consumo (%)
           </label>
@@ -120,11 +120,11 @@ export default function RetainerConfigFields({
             max={100}
             placeholder="80"
             {...register('retainerConfig.alertThreshold', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {configErrors?.alertThreshold && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {configErrors.alertThreshold.message}
             </p>
           )}
@@ -137,12 +137,12 @@ export default function RetainerConfigFields({
           id="overageAllowed"
           type="checkbox"
           {...register('retainerConfig.overageAllowed')}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-dark-border dark:bg-dark-card"
           disabled={isSubmitting}
         />
         <label
           htmlFor="overageAllowed"
-          className="text-sm font-medium text-gray-700"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
         >
           Permitir horas excedentes
         </label>
@@ -153,7 +153,7 @@ export default function RetainerConfigFields({
         <div className="max-w-xs">
           <label
             htmlFor="overageRate"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Valor por hora excedente
           </label>
@@ -164,11 +164,11 @@ export default function RetainerConfigFields({
             step="0.01"
             placeholder="200.00"
             {...register('retainerConfig.overageRate', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {configErrors?.overageRate && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {configErrors.overageRate.message}
             </p>
           )}

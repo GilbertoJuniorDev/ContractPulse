@@ -8,10 +8,10 @@ export default function NewContractPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">
+      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         Novo Contrato
       </h2>
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <div className="card">
         <ContractWizard
           onSuccess={() => router.push('/contracts')}
           onCancel={() => router.push('/contracts')}

@@ -28,11 +28,11 @@ export default function DeleteOrganizationDialog({
       />
 
       {/* Dialog */}
-      <div className="relative z-50 mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="relative z-50 mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-dark-card dark:ring-1 dark:ring-dark-border">
         <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
             <svg
-              className="h-5 w-5 text-red-600"
+              className="h-5 w-5 text-red-600 dark:text-red-400"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -46,12 +46,12 @@ export default function DeleteOrganizationDialog({
             </svg>
           </div>
           <div>
-            <h3 className="text-base font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               Excluir organização
             </h3>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               Tem certeza que deseja excluir a organização{' '}
-              <span className="font-medium text-gray-700">
+              <span className="font-medium text-gray-700 dark:text-gray-300">
                 {organization.name}
               </span>
               ? Esta ação não pode ser desfeita.
@@ -64,7 +64,7 @@ export default function DeleteOrganizationDialog({
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="btn-secondary"
           >
             Cancelar
           </button>
@@ -72,7 +72,7 @@ export default function DeleteOrganizationDialog({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+            className="btn-danger"
           >
             {isDeleting ? 'Excluindo...' : 'Excluir'}
           </button>

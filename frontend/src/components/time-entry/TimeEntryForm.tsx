@@ -64,7 +64,7 @@ export default function TimeEntryForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {apiError && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+        <div className="alert-error">
           {apiError}
         </div>
       )}
@@ -74,7 +74,7 @@ export default function TimeEntryForm({
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700"
+          className="form-label"
         >
           Descrição
         </label>
@@ -83,11 +83,11 @@ export default function TimeEntryForm({
           rows={3}
           placeholder="Ex: Desenvolvimento da feature de relatórios"
           {...register('description')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+          className="input-base"
           disabled={isSubmitting}
         />
         {errors.description && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="field-error">
             {errors.description.message}
           </p>
         )}
@@ -97,7 +97,7 @@ export default function TimeEntryForm({
         <div>
           <label
             htmlFor="hours"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Horas
           </label>
@@ -108,11 +108,11 @@ export default function TimeEntryForm({
             min="0.5"
             max="24"
             {...register('hours', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {errors.hours && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {errors.hours.message}
             </p>
           )}
@@ -121,7 +121,7 @@ export default function TimeEntryForm({
         <div>
           <label
             htmlFor="entryDate"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Data
           </label>
@@ -129,11 +129,11 @@ export default function TimeEntryForm({
             id="entryDate"
             type="date"
             {...register('entryDate')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {errors.entryDate && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="field-error">
               {errors.entryDate.message}
             </p>
           )}
@@ -145,7 +145,7 @@ export default function TimeEntryForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="btn-secondary"
           >
             Cancelar
           </button>
@@ -153,7 +153,7 @@ export default function TimeEntryForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="btn-primary"
         >
           {isSubmitting ? 'Salvando...' : 'Lançar Horas'}
         </button>

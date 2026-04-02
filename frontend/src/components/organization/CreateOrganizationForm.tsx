@@ -52,7 +52,7 @@ export default function CreateOrganizationForm({
       <div>
         <label
           htmlFor="org-name"
-          className="block text-sm font-medium text-gray-700"
+          className="form-label"
         >
           Nome da Organização
         </label>
@@ -61,17 +61,17 @@ export default function CreateOrganizationForm({
           type="text"
           placeholder="Ex: Minha Agência"
           {...register('name')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+          className="input-base"
           disabled={isSubmitting}
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          <p className="field-error">{errors.name.message}</p>
         )}
       </div>
 
       {apiError && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">{apiError}</p>
+        <div className="alert-error">
+          <p>{apiError}</p>
         </div>
       )}
 
@@ -80,7 +80,7 @@ export default function CreateOrganizationForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="btn-secondary"
             disabled={isSubmitting}
           >
             Cancelar
@@ -88,7 +88,7 @@ export default function CreateOrganizationForm({
         )}
         <button
           type="submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+          className="btn-primary"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Criando...' : 'Criar Organização'}

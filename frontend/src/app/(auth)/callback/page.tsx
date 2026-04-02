@@ -21,8 +21,8 @@ function CallbackContent() {
 
   return (
     <div className="text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
-      <p className="mt-4 text-sm text-gray-600">Processando autenticação...</p>
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto" />
+      <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">Processando autenticação...</p>
     </div>
   )
 }
@@ -34,12 +34,12 @@ function CallbackContent() {
  */
 export default function AuthCallbackPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
       <Suspense
         fallback={
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
-            <p className="mt-4 text-sm text-gray-600">Carregando...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto" />
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">Carregando...</p>
           </div>
         }
       >

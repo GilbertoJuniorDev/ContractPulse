@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -70,24 +71,35 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        {/* Branding */}
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 px-4 transition-colors duration-300 dark:from-dark-bg dark:via-blue-950/20 dark:to-dark-bg">
+      {/* Theme toggle flutuante */}
+      <div className="fixed right-4 top-4">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-md space-y-8">
+        {/* Logo */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">ContractPulse</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Gestão de contratos transparente
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25">
+            <span className="text-xl font-bold text-white">CP</span>
+          </div>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            ContractPulse
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {isSignUp ? 'Crie sua conta' : 'Entre na sua conta'}
           </p>
         </div>
 
+      <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-xl shadow-gray-200/50 transition-colors dark:border-dark-border dark:bg-dark-card dark:shadow-none">
         {/* Mensagens de erro/sucesso */}
         {error && (
-          <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+          <div className="alert-error mb-4">
             {error}
           </div>
         )}
         {message && (
-          <div className="p-3 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg">
+          <div className="alert-success mb-4">
             {message}
           </div>
         )}
@@ -96,7 +108,7 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-dark-border dark:bg-dark-hover dark:text-gray-300 dark:hover:bg-dark-border"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -122,17 +134,17 @@ export default function LoginPage() {
         {/* Divisor */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-gray-300 dark:border-dark-border" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">ou</span>
+            <span className="px-2 bg-white text-gray-500 dark:bg-dark-card dark:text-gray-400">ou</span>
           </div>
         </div>
 
         {/* Email + Senha */}
         <form onSubmit={handleEmailAuth} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="form-label">
               E-mail
             </label>
             <input
@@ -141,13 +153,13 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="input-base mt-1.5"
               placeholder="voce@exemplo.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="form-label">
               Senha
             </label>
             <input
@@ -157,7 +169,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="input-base mt-1.5"
               placeholder="••••••••"
             />
           </div>
@@ -165,7 +177,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="btn-primary w-full"
           >
             {loading ? 'Carregando...' : isSignUp ? 'Criar conta' : 'Entrar'}
           </button>
@@ -179,13 +191,18 @@ export default function LoginPage() {
               setError(null)
               setMessage(null)
             }}
-            className="text-sm text-blue-600 hover:text-blue-500"
+            className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             {isSignUp
               ? 'Já tem conta? Entrar'
               : 'Não tem conta? Criar conta'}
           </button>
         </div>
+      </div>
+
+        <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
+          © 2025 ContractPulse. Todos os direitos reservados.
+        </p>
       </div>
     </div>
   )

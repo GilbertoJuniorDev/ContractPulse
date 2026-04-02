@@ -15,27 +15,27 @@ const statusConfig: Record<
 > = {
   DRAFT: {
     label: 'Rascunho',
-    className: 'bg-gray-100 text-gray-800',
+    className: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
   },
   SUBMITTED: {
     label: 'Enviado',
-    className: 'bg-blue-100 text-blue-800',
+    className: 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400',
   },
   PENDING_APPROVAL: {
     label: 'Pendente',
-    className: 'bg-yellow-100 text-yellow-800',
+    className: 'bg-yellow-100 text-yellow-800 dark:bg-amber-500/20 dark:text-amber-400',
   },
   APPROVED: {
     label: 'Aprovado',
-    className: 'bg-green-100 text-green-800',
+    className: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-400',
   },
   DISPUTED: {
     label: 'Disputado',
-    className: 'bg-red-100 text-red-800',
+    className: 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-400',
   },
   INVOICED: {
     label: 'Faturado',
-    className: 'bg-purple-100 text-purple-800',
+    className: 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-400',
   },
 }
 

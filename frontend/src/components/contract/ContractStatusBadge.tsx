@@ -9,9 +9,9 @@ const STATUS_LABELS: Record<ContractStatus, string> = {
 }
 
 const STATUS_COLORS: Record<ContractStatus, string> = {
-  ACTIVE: 'bg-green-100 text-green-700',
-  PAUSED: 'bg-yellow-100 text-yellow-700',
-  TERMINATED: 'bg-red-100 text-red-700',
+  ACTIVE: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400',
+  PAUSED: 'bg-yellow-100 text-yellow-700 dark:bg-amber-500/20 dark:text-amber-400',
+  TERMINATED: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
 }
 
 interface ContractStatusBadgeProps {

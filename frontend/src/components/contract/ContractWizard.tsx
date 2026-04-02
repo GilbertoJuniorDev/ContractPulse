@@ -84,21 +84,21 @@ export default function ContractWizard({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Dados básicos */}
       <div className="space-y-4">
-        <h3 className="text-base font-medium text-gray-900">Dados do Contrato</h3>
+        <h3 className="text-base font-medium text-gray-900 dark:text-white">Dados do Contrato</h3>
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Organização */}
           <div>
             <label
               htmlFor="organizationId"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Organização
             </label>
             <select
               id="organizationId"
               {...register('organizationId')}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="select-base"
               disabled={isSubmitting}
             >
               <option value="">Selecione...</option>
@@ -109,7 +109,7 @@ export default function ContractWizard({
               ))}
             </select>
             {errors.organizationId && (
-              <p className="mt-1 text-sm text-red-600">
+              <p className="field-error">
                 {errors.organizationId.message}
               </p>
             )}
@@ -119,14 +119,14 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="clientUserId"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Cliente
             </label>
             <select
               id="clientUserId"
               {...register('clientUserId')}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="select-base"
               disabled={isSubmitting || isLoadingClients}
             >
               <option value="">
@@ -139,7 +139,7 @@ export default function ContractWizard({
               ))}
             </select>
             {errors.clientUserId && (
-              <p className="mt-1 text-sm text-red-600">
+              <p className="field-error">
                 {errors.clientUserId.message}
               </p>
             )}
@@ -150,7 +150,7 @@ export default function ContractWizard({
         <div>
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
+            className="form-label"
           >
             Título do Contrato
           </label>
@@ -159,11 +159,11 @@ export default function ContractWizard({
             type="text"
             placeholder="Ex: Suporte Mensal - Empresa X"
             {...register('title')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="input-base"
             disabled={isSubmitting}
           />
           {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+            <p className="field-error">{errors.title.message}</p>
           )}
         </div>
 
@@ -172,14 +172,14 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="type"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Tipo
             </label>
             <select
               id="type"
               {...register('type')}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="select-base"
               disabled={isSubmitting}
             >
               <option value="RETAINER">Banco de Horas</option>
@@ -190,14 +190,14 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="currency"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Moeda
             </label>
             <select
               id="currency"
               {...register('currency')}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="select-base"
               disabled={isSubmitting}
             >
               <option value="BRL">Real (R$)</option>
@@ -210,7 +210,7 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="billingDay"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Dia de faturamento
             </label>
@@ -220,11 +220,11 @@ export default function ContractWizard({
               min={1}
               max={28}
               {...register('billingDay', { valueAsNumber: true })}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="input-base"
               disabled={isSubmitting}
             />
             {errors.billingDay && (
-              <p className="mt-1 text-sm text-red-600">
+              <p className="field-error">
                 {errors.billingDay.message}
               </p>
             )}
@@ -236,7 +236,7 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="startDate"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Data de início
             </label>
@@ -244,11 +244,11 @@ export default function ContractWizard({
               id="startDate"
               type="date"
               {...register('startDate')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="input-base"
               disabled={isSubmitting}
             />
             {errors.startDate && (
-              <p className="mt-1 text-sm text-red-600">
+              <p className="field-error">
                 {errors.startDate.message}
               </p>
             )}
@@ -258,16 +258,16 @@ export default function ContractWizard({
           <div>
             <label
               htmlFor="endDate"
-              className="block text-sm font-medium text-gray-700"
+              className="form-label"
             >
               Data de fim{' '}
-              <span className="text-gray-400">(opcional)</span>
+              <span className="text-gray-400 dark:text-gray-500">(opcional)</span>
             </label>
             <input
               id="endDate"
               type="date"
               {...register('endDate')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              className="input-base"
               disabled={isSubmitting}
             />
           </div>
@@ -284,15 +284,15 @@ export default function ContractWizard({
 
       {/* Erro de validação de refine (retainerConfig obrigatória) */}
       {errors.retainerConfig?.message && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">{errors.retainerConfig.message}</p>
+        <div className="alert-error">
+          <p>{errors.retainerConfig.message}</p>
         </div>
       )}
 
       {/* Erro da API */}
       {apiError && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">{apiError}</p>
+        <div className="alert-error">
+          <p>{apiError}</p>
         </div>
       )}
 
@@ -302,7 +302,7 @@ export default function ContractWizard({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="btn-secondary"
             disabled={isSubmitting}
           >
             Cancelar
@@ -310,7 +310,7 @@ export default function ContractWizard({
         )}
         <button
           type="submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+          className="btn-primary"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Criando...' : 'Criar Contrato'}

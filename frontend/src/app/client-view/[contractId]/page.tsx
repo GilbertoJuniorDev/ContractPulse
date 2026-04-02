@@ -13,6 +13,7 @@ import {
 import BurnRateChart from '@/components/charts/BurnRateChart'
 import TimeEntryList from '@/components/time-entry/TimeEntryList'
 import DisputeModal from '@/components/time-entry/DisputeModal'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import type { TimeEntryStatus } from '@/lib/types/time-entry'
 
 /** Status que o client pode revisar. */
@@ -49,9 +50,9 @@ export default function ClientViewPage({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-dark-bg">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-        <span className="ml-3 text-sm text-gray-600">Carregando dashboard...</span>
+        <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">Carregando dashboard...</span>
       </div>
     )
   }
@@ -69,20 +70,23 @@ export default function ClientViewPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200 dark:bg-dark-card dark:border-dark-border">
         <div className="max-w-5xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <Link
-            href="/my-contracts"
-            className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mb-2"
-          >
-            &larr; Voltar para Meus Contratos
-          </Link>
-          <h1 className="text-xl font-bold text-gray-900">
+          <div className="flex items-center justify-between mb-2">
+            <Link
+              href="/my-contracts"
+              className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              &larr; Voltar para Meus Contratos
+            </Link>
+            <ThemeToggle />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             {contract?.title ?? 'Dashboard do Cliente'}
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Acompanhe suas horas e gerencie lançamentos
           </p>
         </div>
@@ -94,32 +98,32 @@ export default function ClientViewPage({
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <BurnRateChart dashboard={dashboard} />
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <h3 className="text-sm font-medium text-gray-500">
+            <div className="card">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Aguardando Revisão
               </h3>
-              <p className="mt-2 text-3xl font-bold text-yellow-600">
+              <p className="mt-2 text-3xl font-bold text-yellow-600 dark:text-amber-400">
                 {reviewableCount}
               </p>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Lançamentos para aprovar ou disputar
               </p>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <h3 className="text-sm font-medium text-gray-500">
+            <div className="card">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Aprovados / Disputados
               </h3>
               <div className="mt-2 flex items-end gap-2">
-                <span className="text-3xl font-bold text-green-600">
+                <span className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {dashboard.approvedEntries}
                 </span>
-                <span className="text-lg text-gray-400">/</span>
-                <span className="text-3xl font-bold text-red-600">
+                <span className="text-lg text-gray-400 dark:text-gray-500">/</span>
+                <span className="text-3xl font-bold text-red-600 dark:text-red-400">
                   {dashboard.disputedEntries}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Neste período de cobrança
               </p>
             </div>
@@ -127,9 +131,9 @@ export default function ClientViewPage({
         )}
 
         {/* Lista de horas com ações de aprovação */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="card">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Lançamentos de Horas
             </h2>
 
@@ -138,7 +142,7 @@ export default function ClientViewPage({
                 type="button"
                 onClick={handleBatchApprove}
                 disabled={batchApproveMutation.isPending}
-                className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-dark-bg"
               >
                 {batchApproveMutation.isPending
                   ? 'Aprovando...'
@@ -148,16 +152,16 @@ export default function ClientViewPage({
           </div>
 
           {batchApproveMutation.isSuccess && (
-            <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-3">
-              <p className="text-sm text-green-700">
+            <div className="alert-success">
+              <p className="text-sm text-green-700 dark:text-green-300">
                 Todos os lançamentos pendentes foram aprovados com sucesso.
               </p>
             </div>
           )}
 
           {batchApproveMutation.isError && (
-            <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3">
-              <p className="text-sm text-red-700">
+            <div className="alert-error">
+              <p className="text-sm text-red-700 dark:text-red-300">
                 Erro ao aprovar em lote. Tente novamente.
               </p>
             </div>
