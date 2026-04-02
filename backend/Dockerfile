@@ -31,4 +31,5 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # Comando de inicialização — usar shell form para expandir $PORT
-CMD java -jar -Dserver.port=${PORT:-8080} app.jar
+# -Djava.net.preferIPv4Stack=true força IPv4 (Railway usa IPv6, Supabase só aceita IPv4)
+CMD java -jar -Dserver.port=${PORT:-8080} -Djava.net.preferIPv4Stack=true app.jar
