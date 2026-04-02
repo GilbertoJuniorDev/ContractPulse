@@ -32,4 +32,5 @@ EXPOSE 8080
 
 # Comando de inicialização — usar shell form para expandir $PORT
 # -Djava.net.preferIPv4Stack=true força IPv4 (Railway usa IPv6, Supabase só aceita IPv4)
-CMD java -jar -Dserver.port=${PORT:-8080} -Djava.net.preferIPv4Stack=true app.jar
+# --spring.profiles.active=prod ativa as configs de produção (SSL, pooler)
+CMD java -jar -Dserver.port=${PORT:-8080} -Djava.net.preferIPv4Stack=true -Dspring.profiles.active=prod app.jar
